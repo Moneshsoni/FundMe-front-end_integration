@@ -6,9 +6,23 @@
 </head>
 <body>
    <h1> Hello this is fund me Dapp</h1>
-   <script src="./index.js" type="text/javascript">
+   <script src="./index.js" type="module">
    </script>
-   <center><button id="connectButton" onclick="connect()">Connect Metamask</button></center>
+   <center><button id="connectButton">Connect Metamask</button></center>
+   <br>
+
+   <br>
+   <center>
+    <label for = "fund">ETH  Amount</label>
+   </center>
+
+   <center><input id="ethAmount" placeholder="0.01"></input></center>
+   <br>
+   <center><button id="fundButton">Fund me</button></center>
    
+   <button id="balanceButton">GetBalance</button>
+   <br>
+   <br>
+   <button id="withdrawButton">withdrawBalance</button>
 </body>
 </html>

@@ -1,0 +1,23 @@
+{
+  "name": "ethersjs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Moneshsoni/FundMe-front-end_integration.git"
+  },
+  "author": "Monesh soni",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Moneshsoni/FundMe-front-end_integration/issues"
+  },
+  "homepage": "https://github.com/Moneshsoni/FundMe-front-end_integration#readme",
+  "dependencies": {
+    "ethers": "^6.0.8",
+    "prettierrc": "^0.0.0-5"
+  }
+}
