@@ -2,13 +2,16 @@ import { ethers } from "./ethers-5.6.esm.min.js";
 import {abi,contractAddress} from "./constants.js";
 
 const connectButton = document.getElementById("connectButton");
+const withdrawButton = document.getElementById("withdrawButton");
 const fundButton = document.getElementById("fundButton");
 const balanceButton = document.getElementById("balanceButton");
-const withdrawButton = document.getElementById("withdrawButton");
 connectButton.onclick = connect
+withdrawButton.onclick = Withdraw
 fundButton.onclick = fund
 balanceButton.onclick = GetBalance
-withdrawButton.onclick = Withdraw
+
+
+
 async function connect(){
     if(typeof window.ethereum !=="undefined"){
        await window.ethereum.request({method:"eth_requestAccounts"});
@@ -19,13 +22,26 @@ async function connect(){
     }
 }
 
-async function GetBalance(){
-    if(typeof window.ethereum != "undefined"){
-       const provider = new ethers.providers.Web3Provider(window.ethereum)
-       const balance = await provider.getBalance(contractAddress);
-       console.log(ethers.utils.formatEther(balance));
+
+async function Withdraw() {
+    console.log(`Withdrawing...`)
+    if (typeof window.ethereum !== "undefined") {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      await provider.send('eth_requestAccounts', [])
+      const signer = provider.getSigner()
+      const contract = new ethers.Contract(contractAddress, abi, signer)
+      try {
+        const transactionResponse = await contract.Withdraw()
+        await listenForTransactionMine(transactionResponse, provider)
+        // await transactionResponse.wait(1)
+      } catch (error) {
+        console.log(error)
+      }
+    } else {
+      withdrawButton.innerHTML = "Please install MetaMask"
     }
-}
+  }
+
 
 async function fund(){
     const ethAmount = document.getElementById("ethAmount").value;
@@ -44,7 +60,7 @@ async function fund(){
             })
 
             //hey wait for this TX to finish this
-            await listingForTransactionMine(transactionResponse,provider);
+            await listenForTransactionMine(transactionResponse,provider);
             console.log("Done!");
         }catch (error){
             console.log(error);
@@ -53,32 +69,30 @@ async function fund(){
      
     }
 
-}
-
-function listingForTransactionMine(transactionResponse,provider){
-    console.log(`Mining ${transactionResponse.hash} ....`);
-    
-    return new Promise((resolve,reject)=>{
-        provider.once(transactionResponse.hash, (getTransactionReceipt)=>{
-            console.log(`Completed with ${transactionResponse.confirmations} Confirmations`);
-        })
-        resolve()
-    })
-
 
 }
 
-async function Withdraw(){
+async function GetBalance(){
     if(typeof window.ethereum != "undefined"){
-        console.log("Withdrawing ...");
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = provider.getSigner()
-        const contract = new ethers.Contract(contractAddress,abi,signer);
-        try{
-            const transactionResponse = await contract.Withdraw();
-            await listingForTransactionMine(transactionResponse,provider);
-        }catch (error){
-            console.log(error);
-        } 
+       const provider = new ethers.providers.Web3Provider(window.ethereum)
+       const balance = await provider.getBalance(contractAddress);
+       console.log(ethers.utils.formatEther(balance));
     }
+}
+
+
+function listenForTransactionMine(transactionResponse, provider) {
+    console.log(`Mining ${transactionResponse.hash}`)
+    return new Promise((resolve, reject) => {
+        try {
+            provider.once(transactionResponse.hash, (transactionReceipt) => {
+                console.log(
+                    `Completed with ${transactionReceipt.confirmations} confirmations. `
+                )
+                resolve()
+            })
+        } catch (error) {
+            reject(error)
+        }
+    })
 }
